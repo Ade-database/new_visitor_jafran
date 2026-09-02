@@ -34,13 +34,29 @@
                 class="w-full border border-gray-300 rounded-lg px-4 py-3">
         </div>
 
+        <p class="text-sm text-gray-500">Isi salah satu di bawah ini — Departemen atau Nama Karyawan yang dituju.</p>
+
         <div>
             <label class="block text-sm font-medium text-gray-700 mb-1">Ingin Bertemu dengan Departemen</label>
-            <select name="department_id" required class="w-full border border-gray-300 rounded-lg px-4 py-3">
+            <select name="department_id" class="w-full border border-gray-300 rounded-lg px-4 py-3">
                 <option value="">-- Pilih Departemen --</option>
                 @foreach ($departments as $department)
                     <option value="{{ $department->id }}" @selected(old('department_id') == $department->id)>
                         {{ $department->name }}
+                    </option>
+                @endforeach
+            </select>
+        </div>
+
+        <div class="text-center text-xs text-gray-400">— atau —</div>
+
+        <div>
+            <label class="block text-sm font-medium text-gray-700 mb-1">Tidak Tahu Departemen? Cari Nama Karyawan</label>
+            <select name="employee_id" class="w-full border border-gray-300 rounded-lg px-4 py-3">
+                <option value="">-- Pilih Nama Karyawan --</option>
+                @foreach ($employees as $employee)
+                    <option value="{{ $employee->id }}" @selected(old('employee_id') == $employee->id)>
+                        {{ $employee->name }} ({{ $employee->department }})
                     </option>
                 @endforeach
             </select>

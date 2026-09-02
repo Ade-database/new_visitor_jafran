@@ -3,6 +3,7 @@
 namespace App\Filament\Pages;
 
 use App\Models\Department;
+use App\Models\Employee;
 use App\Models\Visit;
 use App\Models\Visitor;
 use BackedEnum;
@@ -67,6 +68,11 @@ class InputTamuPrioritas extends Page implements HasSchemas
                     ->label('Ingin Bertemu dengan Departemen (opsional)')
                     ->options(fn () => Department::pluck('name', 'id'))
                     ->searchable(),
+
+                Select::make('employee_id')
+                    ->label('Atau, Nama Karyawan yang Dituju (opsional)')
+                    ->options(fn () => Employee::orderBy('name')->pluck('name', 'id'))
+                    ->searchable(),
             ])
             ->statePath('data');
     }
@@ -85,6 +91,7 @@ class InputTamuPrioritas extends Page implements HasSchemas
         Visit::create([
             'visitor_id'    => $visitor->id,
             'department_id' => $data['department_id'] ?? null,
+            'employee_id'   => $data['employee_id'] ?? null,
             'input_by'      => Auth::id(),
             'purpose'       => $data['purpose'] ?? null,
             'status'        => 'pending',
