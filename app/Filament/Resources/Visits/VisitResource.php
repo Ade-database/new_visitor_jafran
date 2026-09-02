@@ -23,6 +23,18 @@ class VisitResource extends Resource
 
     protected static ?string $navigationLabel = 'Kunjungan';
 
+    public static function getNavigationBadge(): ?string
+    {
+        $count = Visit::where('status', 'pending')->count();
+
+        return $count > 0 ? (string) $count : null;
+    }
+
+    public static function getNavigationBadgeColor(): ?string
+    {
+        return 'warning';
+    }
+
     public static function form(Schema $schema): Schema
     {
         return $schema->components([]);
