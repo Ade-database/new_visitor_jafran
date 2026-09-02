@@ -68,6 +68,13 @@ class VisitResource extends Resource
                     ->label('Rating')
                     ->formatStateUsing(fn ($state) => $state ? str_repeat('⭐', $state) : '-')
                     ->visible(fn () => Auth::user()?->role === 'admin'),
+
+                TextColumn::make('feedback.comment')
+                    ->label('Ulasan')
+                    ->limit(50)
+                    ->wrap()
+                    ->placeholder('Belum ada ulasan')
+                    ->visible(fn () => Auth::user()?->role === 'admin'),
             ])
             ->defaultSort('submitted_at', 'desc')
             ->recordActions([
