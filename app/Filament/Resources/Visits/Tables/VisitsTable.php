@@ -28,6 +28,16 @@ class VisitsTable
                     ->searchable(),
                 TextColumn::make('status')
                     ->badge(),
+                TextColumn::make('feedback.rating')
+                    ->label('Rating')
+                    ->formatStateUsing(fn ($state) => $state ? str_repeat('⭐', $state) : '-')
+                    ->sortable(),
+                TextColumn::make('feedback.comment')
+                    ->label('Ulasan')
+                    ->limit(50)
+                    ->wrap()
+                    ->placeholder('Belum ada ulasan')
+                    ->searchable(),
                 TextColumn::make('submitted_at')
                     ->dateTime()
                     ->sortable(),

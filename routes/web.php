@@ -1,11 +1,16 @@
 <?php
 
+use App\Http\Controllers\ExportController;
 use App\Http\Controllers\VisitorRegistrationController;
 use Illuminate\Support\Facades\Route;
 
 Route::get('/', function () {
     return view('welcome');
 });
+
+Route::get('/export/visitors', [ExportController::class, 'visitors'])
+    ->middleware('auth')
+    ->name('export.visitors');
 
 Route::prefix('kunjungan')->name('kunjungan.')->group(function () {
     Route::get('/', [VisitorRegistrationController::class, 'phone'])->name('phone');

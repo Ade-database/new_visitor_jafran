@@ -3,10 +3,14 @@
 namespace App\Filament\Resources\Visitors;
 
 use App\Filament\Resources\Visitors\Pages\ListVisitors;
+use App\Models\Department;
 use App\Models\Visitor;
 use BackedEnum;
 use Filament\Actions\Action;
 use Filament\Actions\DeleteAction;
+use Filament\Forms\Components\FileUpload;
+use Filament\Forms\Components\Select;
+use Filament\Forms\Components\TextInput;
 use Filament\Resources\Resource;
 use Filament\Schemas\Schema;
 use Filament\Support\Icons\Heroicon;
@@ -24,7 +28,52 @@ class VisitorResource extends Resource
 
     public static function form(Schema $schema): Schema
     {
-        return $schema->components([]);
+        return $schema->components([
+            TextInput::make('name')
+                ->label('Nama Lengkap')
+                ->required()
+                ->maxLength(255),
+
+            TextInput::make('phone_number')
+                ->label('No. HP')
+                ->tel()
+                ->required()
+                ->maxLength(20),
+
+            TextInput::make('company')
+                ->label('Instansi (opsional)')
+                ->maxLength(255),
+
+            Select::make('category')
+                ->label('Kategori')
+                ->options([
+                    'reguler' => 'Reguler',
+                    'prioritas' => 'Prioritas',
+                ])
+                ->default('reguler')
+                ->required()
+                ->native(false),
+
+            TextInput::make('purpose')
+                ->label('Tujuan Kunjungan')
+                ->placeholder('Misal: Meeting, Interview')
+                ->required()
+                ->maxLength(255),
+
+            Select::make('department_id')
+                ->label('Ingin Bertemu dengan Departemen')
+                ->placeholder('-- Pilih Departemen --')
+                ->options(fn () => Department::orderBy('name')->pluck('name', 'id'))
+                ->required()
+                ->native(false),
+
+            FileUpload::make('photo_path')
+                ->label('Foto Wajah')
+                ->image()
+                ->disk('public')
+                ->directory('visitor-photos')
+                ->avatar(),
+        ]);
     }
 
     public static function table(Table $table): Table
