@@ -57,6 +57,10 @@ class VisitResource extends Resource
                     ->label('Departemen')
                     ->placeholder('-'),
 
+                TextColumn::make('employee.name')
+                    ->label('Karyawan Dituju')
+                    ->placeholder('-'),
+
                 TextColumn::make('purpose')
                     ->label('Tujuan')
                     ->limit(30),
