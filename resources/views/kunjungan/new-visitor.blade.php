@@ -38,7 +38,7 @@
 
         <div>
             <label class="block text-sm font-medium text-gray-700 mb-1">Ingin Bertemu dengan Departemen</label>
-            <select name="department_id" class="w-full border border-gray-300 rounded-lg px-4 py-3">
+            <select name="department_id" id="department_id" class="w-full border border-gray-300 rounded-lg px-4 py-3 disabled:bg-gray-100">
                 <option value="">-- Pilih Departemen --</option>
                 @foreach ($departments as $department)
                     <option value="{{ $department->id }}" @selected(old('department_id') == $department->id)>
@@ -52,14 +52,15 @@
 
         <div>
             <label class="block text-sm font-medium text-gray-700 mb-1">Tidak Tahu Departemen? Cari Nama Karyawan</label>
-            <select name="employee_id" class="w-full border border-gray-300 rounded-lg px-4 py-3">
+            <select name="employee_id" id="employee_id" class="w-full border border-gray-300 rounded-lg px-4 py-3">
                 <option value="">-- Pilih Nama Karyawan --</option>
                 @foreach ($employees as $employee)
-                    <option value="{{ $employee->id }}" @selected(old('employee_id') == $employee->id)>
+                    <option value="{{ $employee->id }}" data-department="{{ $employee->department }}" @selected(old('employee_id') == $employee->id)>
                         {{ $employee->name }} ({{ $employee->department }})
                     </option>
                 @endforeach
             </select>
+            <p class="text-xs text-gray-400 mt-1">Pilih karyawan akan otomatis mengisi Departemen di atas.</p>
         </div>
 
         <div>
@@ -74,4 +75,40 @@
         </button>
     </form>
 </div>
+
+<script>
+document.addEventListener('DOMContentLoaded', function () {
+    const employeeSelect = document.getElementById('employee_id');
+    const departmentSelect = document.getElementById('department_id');
+
+    function syncDepartmentFromEmployee() {
+        const selectedOption = employeeSelect.options[employeeSelect.selectedIndex];
+        const departmentName = selectedOption ? selectedOption.getAttribute('data-department') : null;
+
+        if (departmentName) {
+            let matched = false;
+            for (const option of departmentSelect.options) {
+                if (option.textContent.trim() === departmentName.trim()) {
+                    departmentSelect.value = option.value;
+                    matched = true;
+                    break;
+                }
+            }
+            if (!matched) {
+                departmentSelect.value = '';
+            }
+            departmentSelect.disabled = true;
+        } else {
+            departmentSelect.disabled = false;
+        }
+    }
+
+    employeeSelect.addEventListener('change', syncDepartmentFromEmployee);
+
+    // Kalau form reload karena validasi gagal & employee sudah terpilih sebelumnya
+    if (employeeSelect.value) {
+        syncDepartmentFromEmployee();
+    }
+});
+</script>
 @endsection
