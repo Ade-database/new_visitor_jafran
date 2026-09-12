@@ -6,7 +6,9 @@ use App\Filament\Resources\Employees\Pages\ListEmployees;
 use App\Models\Department;
 use App\Models\Employee;
 use BackedEnum;
+use Filament\Actions\BulkActionGroup;
 use Filament\Actions\DeleteAction;
+use Filament\Actions\DeleteBulkAction;
 use Filament\Actions\EditAction;
 use Filament\Forms\Components\Select;
 use Filament\Forms\Components\TextInput;
@@ -14,6 +16,7 @@ use Filament\Resources\Resource;
 use Filament\Schemas\Schema;
 use Filament\Support\Icons\Heroicon;
 use Filament\Tables\Columns\TextColumn;
+use Filament\Tables\Filters\SelectFilter;
 use Filament\Tables\Table;
 
 class EmployeeResource extends Resource
@@ -43,6 +46,7 @@ class EmployeeResource extends Resource
     public static function table(Table $table): Table
     {
         return $table
+            ->recordAction(null)
             ->columns([
                 TextColumn::make('name')
                     ->label('Nama Karyawan')
@@ -58,9 +62,19 @@ class EmployeeResource extends Resource
                     ->sortable(),
             ])
             ->defaultSort('name')
+            ->filters([
+                SelectFilter::make('department')
+                    ->label('Departemen')
+                    ->options(fn () => Department::orderBy('name')->pluck('name', 'name')),
+            ])
             ->recordActions([
                 EditAction::make(),
                 DeleteAction::make(),
+            ])
+            ->toolbarActions([
+                BulkActionGroup::make([
+                    DeleteBulkAction::make(),
+                ]),
             ]);
     }
 
