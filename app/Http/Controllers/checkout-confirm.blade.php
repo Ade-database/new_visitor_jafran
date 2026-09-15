@@ -15,4 +15,23 @@
         </button>
     </form>
 </div>
+
+<script>
+    const pollInterval = setInterval(async () => {
+        try {
+            const res = await fetch('{{ route('kunjungan.checkout-status') }}');
+            const data = await res.json();
+
+            if (!data.status) return;
+
+            // Kalau admin sudah checkout-in dari dashboard, statusnya bukan 'checked_in' lagi
+            if (data.status !== 'checked_in') {
+                clearInterval(pollInterval);
+                window.location.href = '{{ route('kunjungan.checkout-confirm') }}';
+            }
+        } catch (e) {
+            // Kalau lagi nggak ada koneksi internet, diem aja, coba lagi nanti
+        }
+    }, 5000);
+</script>
 @endsection

@@ -170,7 +170,32 @@ class VisitorRegistrationController extends Controller
 
         $visit = Visit::with('visitor')->findOrFail(Session::get('reg.visit_id'));
 
+        // Kalau ternyata sudah di-checkout (misalnya oleh admin), langsung lanjut ke feedback
+        if ($visit->status !== 'checked_in') {
+            Session::put('reg.feedback_visit_id', $visit->id);
+            Session::forget('reg.visit_id');
+
+            return redirect()->route('kunjungan.feedback');
+        }
+
         return view('kunjungan.checkout-confirm', compact('visit'));
+    }
+
+    public function checkoutStatus()
+    {
+        if (! Session::has('reg.visit_id')) {
+            return response()->json(['status' => null]);
+        }
+
+        $visit = Visit::find(Session::get('reg.visit_id'));
+
+        if (! $visit) {
+            return response()->json(['status' => null]);
+        }
+
+        return response()->json([
+            'status' => $visit->status,
+        ]);
     }
 
     public function storeCheckout()
@@ -180,7 +205,10 @@ class VisitorRegistrationController extends Controller
         }
 
         $visit = Visit::findOrFail(Session::get('reg.visit_id'));
-        $visit->checkOut();
+
+        if ($visit->status === 'checked_in') {
+            $visit->checkOut();
+        }
 
         Session::put('reg.feedback_visit_id', $visit->id);
         Session::forget('reg.visit_id');

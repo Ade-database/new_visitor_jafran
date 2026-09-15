@@ -109,6 +109,21 @@ class VisitResource extends Resource
                             ->send();
                     }),
 
+                Action::make('checkout')
+                    ->label('Checkout')
+                    ->color('gray')
+                    ->icon('heroicon-o-arrow-left-start-on-rectangle')
+                    ->visible(fn (Visit $record) => $record->status === 'checked_in')
+                    ->requiresConfirmation()
+                    ->action(function (Visit $record) {
+                        $record->checkOut();
+
+                        Notification::make()
+                            ->title('Tamu berhasil checkout')
+                            ->success()
+                            ->send();
+                    }),
+
                 Action::make('approve')
                     ->label('Setujui')
                     ->color('success')

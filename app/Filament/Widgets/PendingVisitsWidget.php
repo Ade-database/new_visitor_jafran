@@ -13,7 +13,7 @@ use Illuminate\Support\Facades\Auth;
 
 class PendingVisitsWidget extends BaseWidget
 {
-    protected static ?string $heading = 'Kunjungan Menunggu Persetujuan';
+    protected static ?string $heading = 'Kunjungan Perlu Aksi';
 
     protected int|string|array $columnSpan = 'full';
 
@@ -22,7 +22,7 @@ class PendingVisitsWidget extends BaseWidget
         return $table
             ->query(
                 Visit::query()
-                    ->where('status', 'pending')
+                    ->whereIn('status', ['pending', 'approved'])
                     ->latest('submitted_at')
             )
             ->columns([
@@ -38,16 +38,40 @@ class PendingVisitsWidget extends BaseWidget
                     ->label('Tujuan')
                     ->limit(30),
 
+                TextColumn::make('status')
+                    ->badge()
+                    ->color(fn (string $state): string => match ($state) {
+                        'pending' => 'gray',
+                        'approved' => 'success',
+                        default => 'gray',
+                    }),
+
                 TextColumn::make('submitted_at')
                     ->label('Waktu Submit')
                     ->dateTime('d M Y H:i')
                     ->sortable(),
             ])
             ->recordActions([
+                Action::make('checkin')
+                    ->label('Check-in')
+                    ->color('info')
+                    ->icon('heroicon-o-arrow-right-end-on-rectangle')
+                    ->visible(fn (Visit $record) => $record->status === 'approved')
+                    ->requiresConfirmation()
+                    ->action(function (Visit $record) {
+                        $record->checkIn();
+
+                        Notification::make()
+                            ->title('Tamu berhasil check-in')
+                            ->success()
+                            ->send();
+                    }),
+
                 Action::make('approve')
                     ->label('Setujui')
                     ->color('success')
                     ->icon('heroicon-o-check')
+                    ->visible(fn (Visit $record) => $record->status === 'pending')
                     ->requiresConfirmation()
                     ->action(function (Visit $record) {
                         $record->approve(Auth::user());
@@ -62,6 +86,7 @@ class PendingVisitsWidget extends BaseWidget
                     ->label('Tolak')
                     ->color('danger')
                     ->icon('heroicon-o-x-mark')
+                    ->visible(fn (Visit $record) => $record->status === 'pending')
                     ->schema([
                         Textarea::make('reason')
                             ->label('Alasan penolakan')
@@ -77,7 +102,7 @@ class PendingVisitsWidget extends BaseWidget
                     }),
             ])
             ->paginated([5])
-            ->emptyStateHeading('Tidak ada kunjungan pending')
+            ->emptyStateHeading('Tidak ada kunjungan yang perlu aksi')
             ->emptyStateDescription('Semua kunjungan sudah diproses.');
     }
 }
