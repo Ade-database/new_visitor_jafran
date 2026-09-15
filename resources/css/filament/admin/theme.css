@@ -1,0 +1,69 @@
+@import '/vendor/filament/filament/resources/css/theme.css';
+
+.fi-sidebar {
+    background-color: #1F4D3A !important;
+}
+.fi-sidebar-item-label, .fi-sidebar-item-icon {
+    @apply text-white;
+}
+
+.fi-simple-layout .fi-logo,
+.fi-simple-header-heading {
+    font-family: Georgia, 'Times New Roman', serif !important;
+    letter-spacing: 0.08em;
+    color: #1F4D3A !important;
+}
+
+.fi-simple-header-subheading::after {
+    content: '';
+    display: block;
+    width: 28px;
+    height: 2px;
+    background: #C9A227;
+    margin: 8px auto 0;
+}
+
+.fi-fo-field-wrp-label .text-danger-600 {
+    color: #C9A227 !important;
+}
+
+.fi-input {
+    border-radius: 6px !important;
+    background-color: #F4F7F4 !important;
+}
+
+.fi-simple-layout .fi-btn {
+    border-radius: 8px !important;
+}
+
+/* ⬇️ Tambahan baru, taruh di sini paling bawah */
+.fi-simple-layout .fi-section,
+.fi-simple-layout .fi-section-content-ctn {
+    background-color: #F7FAF6 !important;
+    border-color: #DCE4DA !important;
+}
+
+/* Topbar (bar atas dengan nama brand) */
+.fi-topbar {
+    background-color: #1F4D3A !important;
+}
+
+/* Tulisan JAFRAN INDONESIA jadi hijau terang biar kontras */
+.fi-topbar .fi-logo {
+    color: #FFFFFF !important;
+}
+
+/* Ikon panah kembali & tombol lain di topbar jadi putih */
+.fi-topbar .fi-icon-btn-icon {
+    color: #FFFFFF !important;
+}
+.fi-simple-layout .fi-logo {
+    display: none;
+}
+.fi-simple-page img {
+    height: 15rem !important;
+    width: auto !important;
+}
+.fi-simple-layout .fi-simple-main {
+    background-color: #f0faf3; /* hijau sangat muda, senada brand JAFRAN */
+}

@@ -103,6 +103,7 @@ class PendingVisitsWidget extends BaseWidget
             ])
             ->paginated([5])
             ->emptyStateHeading('Tidak ada kunjungan yang perlu aksi')
-            ->emptyStateDescription('Semua kunjungan sudah diproses.');
+            ->emptyStateDescription('Semua kunjungan sudah diproses.')
+            ->emptyStateIcon('heroicon-o-check-circle');
     }
 }

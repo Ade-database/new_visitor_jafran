@@ -2,7 +2,7 @@
     <form wire:submit="submit">
         {{ $this->form }}
 
-        <div class="mt-6">
+        <div style="margin-top: 24px;">
             <x-filament::button type="submit">
                 Simpan Tamu Prioritas
             </x-filament::button>
