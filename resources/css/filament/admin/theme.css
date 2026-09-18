@@ -1,10 +1,21 @@
+@theme {
+    --color-corn-green: #4B5D34;
+    --color-corn-gold: #C9A227;
+    --color-corn-cream: #FAF3E0;
+    --color-corn-sage: #E4E9D8;
+    --color-corn-caramel: #B8863B;
+    --color-corn-dark: #2E3524;
+}
+
 @import '/vendor/filament/filament/resources/css/theme.css';
 
 .fi-sidebar {
-    background-color: #1F4D3A !important;
+    background-color: #FFFFFF !important;
+    border-right: 1px solid #E5E7EB !important;
 }
+
 .fi-sidebar-item-label, .fi-sidebar-item-icon {
-    @apply text-white;
+    color: #1F2937 !important;
 }
 
 .fi-simple-layout .fi-logo,
@@ -45,18 +56,22 @@
 
 /* Topbar (bar atas dengan nama brand) */
 .fi-topbar {
-    background-color: #1F4D3A !important;
+    background-color: #FFFFFF !important;
+    border-bottom: 1px solid #E5E7EB !important;
+    box-shadow: none !important;
 }
 
 /* Tulisan JAFRAN INDONESIA jadi hijau terang biar kontras */
-.fi-topbar .fi-logo {
-    color: #FFFFFF !important;
+.fi-topbar .fi-logo,
+.fi-topbar span {
+    color: #1F2937 !important;
 }
 
 /* Ikon panah kembali & tombol lain di topbar jadi putih */
 .fi-topbar .fi-icon-btn-icon {
-    color: #FFFFFF !important;
+    color: #1F2937 !important;
 }
+
 .fi-simple-layout .fi-logo {
     display: none;
 }
@@ -65,5 +80,96 @@
     width: auto !important;
 }
 .fi-simple-layout .fi-simple-main {
-    background-color: #f0faf3; /* hijau sangat muda, senada brand JAFRAN */
+    background-color: rgba(240, 250, 243, 0.55) !important;
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+    max-width: 30rem !important;
+    border: 1px solid rgba(255, 255, 255, 0.3);
+}
+.fi-simple-layout {
+    background-image: url('/images/latar-belakang-login.jpeg');
+    background-size: cover;
+    background-position: center;
+    background-repeat: no-repeat;
+}
+.fi-main {
+    background-color: #E4E9D8 !important;
+}
+.fi-section {
+    background-color: #FAF3E0 !important; /* corn-cream, biar beda dikit dari background body */
+}
+
+.fi-topbar nav {
+    padding-top: 1.5rem !important;
+    padding-bottom: 1.5rem !important;
+}
+
+
+/* Dark mode overrides */
+.dark .fi-sidebar {
+    background-color: #1a1a1a !important;
+    border-right: 1px solid #2f2f2f !important;
+}
+
+.dark .fi-topbar {
+    background-color: #1a1a1a !important;
+    border-bottom: 1px solid #2f2f2f !important;
+}
+
+.dark .fi-main {
+    background-color: #0f0f0f !important;
+}
+
+.dark .fi-section,
+.dark .fi-ta-ctn,
+.dark .fi-wi-stats-overview-stat {
+    background-color: #232323 !important;
+    border: 1px solid #333333 !important;
+    border-radius: 12px !important;
+}
+
+.dark .fi-sidebar-item-label,
+.dark .fi-sidebar-item-icon {
+    color: #d4d4d4 !important;
+}
+
+.dark .fi-sidebar-item.fi-active {
+    background-color: #2a2a2a !important;
+}
+
+.dark .fi-topbar .fi-logo,
+.dark .fi-topbar span,
+.dark .fi-topbar .fi-icon-btn-icon {
+    color: #d4d4d4 !important;
+}
+
+.dark .fi-input {
+    background-color: #232323 !important;
+    border-color: #333333 !important;
+    color: #e5e5e5 !important;
+}
+
+/* Kasih warna background beda tiap stat card */
+.fi-wi-stats-overview-stat:nth-child(1) {
+    background: linear-gradient(135deg, #1e3a5f, #1e293b) !important;
+    border: 1px solid #2563eb33 !important;
+}
+
+.fi-wi-stats-overview-stat:nth-child(2) {
+    background: linear-gradient(135deg, #4a3a1a, #292118) !important;
+    border: 1px solid #f59e0b33 !important;
+}
+
+.fi-wi-stats-overview-stat:nth-child(3) {
+    background: linear-gradient(135deg, #1a3a2a, #1a2921) !important;
+    border: 1px solid #22c55e33 !important;
+}
+
+.fi-wi-stats-overview-stat:nth-child(4) {
+    background: linear-gradient(135deg, #2a2a3a, #212129) !important;
+    border: 1px solid #8b5cf633 !important;
+}
+
+.fi-wi-stats-overview-stat {
+    border-radius: 14px !important;
 }

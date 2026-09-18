@@ -28,10 +28,12 @@ class AdminPanelProvider extends PanelProvider
             ->path('admin')
             ->viteTheme('resources/css/filament/admin/theme.css')
             ->login(\App\Filament\Pages\Auth\Login::class)
-            ->brandName('JAFRAN INDONESIA')
+            ->brandLogo(fn () => view('filament.admin.logo'))
+            ->brandLogoHeight('3rem')    
             ->sidebarFullyCollapsibleOnDesktop()
             ->colors([
-                'primary' => Color::hex('#dfbe2d'),
+               'primary' => Color::hex('#C9A227'),
+                
             ])
             ->discoverResources(in: app_path('Filament/Resources'), for: 'App\Filament\Resources')
             ->discoverPages(in: app_path('Filament/Pages'), for: 'App\Filament\Pages')
