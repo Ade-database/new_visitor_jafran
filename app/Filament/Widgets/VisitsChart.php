@@ -9,14 +9,16 @@ class VisitsChart extends ChartWidget
 {
     protected int|string|array $columnSpan = 'full';
 
-    protected ?string $heading = 'Kunjungan 7 Hari Terakhir';
+    protected ?string $heading = 'Kunjungan 12 Bulan Terakhir';
 
     protected function getData(): array
     {
-        $days = collect(range(6, 0))->map(fn ($i) => now()->subDays($i));
+        $months = collect(range(11, 0))->map(fn ($i) => now()->subMonths($i));
 
-        $counts = $days->map(
-            fn ($day) => Visit::whereDate('submitted_at', $day->toDateString())->count()
+        $counts = $months->map(
+            fn ($month) => Visit::whereYear('submitted_at', $month->year)
+                ->whereMonth('submitted_at', $month->month)
+                ->count()
         );
 
         return [
@@ -29,7 +31,7 @@ class VisitsChart extends ChartWidget
                     'fill' => true,
                 ],
             ],
-            'labels' => $days->map(fn ($day) => $day->translatedFormat('d M'))->toArray(),
+            'labels' => $months->map(fn ($month) => $month->translatedFormat('M Y'))->toArray(),
         ];
     }
 
