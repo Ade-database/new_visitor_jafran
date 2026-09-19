@@ -1,44 +1,51 @@
 @extends('layouts.kunjungan')
-@section('title', 'Aturan Kunjungan')
+@section('title', 'Video Wajib Tonton')
 @section('content')
-<div class="bg-white rounded-2xl shadow p-6">
-    <h1 class="text-xl font-bold mb-2">Aturan Kunjungan</h1>
-    <p class="text-gray-500 mb-4">Mohon tonton video ini sampai selesai sebelum melanjutkan.</p>
 
-    <video id="rules-video" class="w-full rounded-lg mb-4" controls controlsList="nodownload noplaybackrate" playsinline>
-        <source src="{{ asset('videos/aturan.mp4') }}" type="video/mp4">
-        Browser Anda tidak mendukung video.
+<div class="fixed inset-0 -z-10 bg-cover bg-center"
+     style="background-image: url('{{ asset('images/background_visitor.jpg') }}');"></div>
+
+<div class="rounded-2xl shadow-lg p-6 border border-white/50"
+     style="background-color: rgba(255,255,255,0.4); backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px);">
+
+    <img src="{{ asset('images/logo_jafran.png') }}" alt="Logo Jafran"
+         class="mx-auto mb-4 object-contain"
+         style="width: 80px; height: auto;">
+
+    <h1 class="text-xl font-bold mb-1 text-corn-dark text-center">Video Keselamatan &amp; Tata Tertib</h1>
+    <p class="text-corn-dark/80 text-sm mb-4 text-center">Mohon tonton video ini sampai selesai sebelum melanjutkan.</p>
+
+    <video id="mandatory-video" class="w-full rounded-lg mb-4" controls controlsList="nodownload noplaybackrate"
+           disablepictureinpicture src="{{ asset('videos/tata-tertib.mp4') }}">
+        Browser Anda tidak mendukung pemutaran video.
     </video>
 
     <form method="POST" action="{{ route('kunjungan.submit') }}">
         @csrf
-        <button type="submit" id="btn-lanjut" disabled
-            class="w-full bg-gray-300 text-gray-500 font-medium py-3 rounded-lg cursor-not-allowed transition">
-            Tonton video sampai selesai dulu ya
+        <button type="submit" id="submit-btn" disabled
+            class="w-full bg-corn-sage text-corn-dark/50 font-medium py-3 rounded-lg cursor-not-allowed transition">
+            Tonton video sampai selesai untuk melanjutkan
         </button>
     </form>
 </div>
 
 <script>
-    const video = document.getElementById('rules-video');
-    const btn = document.getElementById('btn-lanjut');
-    let maxTimeReached = 0;
+    const video = document.getElementById('mandatory-video');
+    const btn = document.getElementById('submit-btn');
 
-    // Kalau tamu coba tarik/geser video maju, dikembalikan ke titik terjauh yang sudah ditonton
-    video.addEventListener('timeupdate', () => {
-        if (video.currentTime > maxTimeReached + 0.5) {
-            video.currentTime = maxTimeReached;
-        } else {
-            maxTimeReached = video.currentTime;
+    video.addEventListener('seeking', () => {
+        if (video.currentTime > video.dataset.maxTime || 0) {
+            video.currentTime = video.dataset.maxTime || 0;
         }
     });
-
-    // Baru aktif kalau video beneran sudah tamat
+    video.addEventListener('timeupdate', () => {
+        video.dataset.maxTime = Math.max(video.currentTime, video.dataset.maxTime || 0);
+    });
     video.addEventListener('ended', () => {
         btn.disabled = false;
-        btn.textContent = 'Selesai & Kirim';
-        btn.classList.remove('bg-gray-300', 'text-gray-500', 'cursor-not-allowed');
-        btn.classList.add('bg-blue-600', 'text-white');
+        btn.textContent = 'Lanjutkan';
+        btn.classList.remove('bg-corn-sage', 'text-corn-dark/50', 'cursor-not-allowed');
+        btn.classList.add('bg-corn-green', 'hover:bg-corn-caramel', 'text-white');
     });
 </script>
 @endsection

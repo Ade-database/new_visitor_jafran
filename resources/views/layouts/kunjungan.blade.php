@@ -6,7 +6,7 @@
     <title>@yield('title', 'Kunjungan')</title>
     @vite('resources/css/app.css')
 </head>
-<body class="bg-gray-50 min-h-screen flex items-center justify-center p-4">
+<body class="bg-corn-cream min-h-screen flex items-center justify-center p-4 text-corn-dark">
     <div class="w-full max-w-md">
         @yield('content')
     </div>

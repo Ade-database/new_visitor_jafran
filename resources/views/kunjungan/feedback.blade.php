@@ -1,48 +1,51 @@
 @extends('layouts.kunjungan')
-@section('title', 'Beri Penilaian')
+@section('title', 'Beri Feedback')
 @section('content')
-<div class="bg-white rounded-2xl shadow p-6">
-    <h1 class="text-xl font-bold mb-2">Bagaimana kunjungan Anda?</h1>
-    <p class="text-gray-500 mb-6">Feedback ini opsional, tapi sangat membantu kami.</p>
+
+<div class="fixed inset-0 -z-10 bg-cover bg-center"
+     style="background-image: url('{{ asset('images/background_visitor.jpg') }}');"></div>
+
+<div class="rounded-2xl shadow-lg p-6 border border-white/50"
+     style="background-color: rgba(255,255,255,0.4); backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px);">
+
+    <img src="{{ asset('images/logo_jafran.png') }}" alt="Logo Jafran"
+         class="mx-auto mb-4 object-contain"
+         style="width: 80px; height: auto;">
+
+    <h1 class="text-xl font-bold mb-1 text-corn-dark text-center">Bagaimana Kunjungan Anda?</h1>
+    <p class="text-corn-dark/80 text-sm mb-6 text-center">Feedback Anda membantu kami meningkatkan layanan (opsional).</p>
 
     @if ($errors->any())
         <div class="mb-4 text-sm text-red-600">{{ $errors->first() }}</div>
     @endif
 
-    <form method="POST" action="{{ route('kunjungan.store-feedback') }}" class="space-y-4">
+    <form method="POST" action="{{ route('kunjungan.store-feedback') }}" class="mb-3">
         @csrf
 
-        <div>
-            <label class="block text-sm font-medium text-gray-700 mb-2">Beri Rating</label>
-            <div class="flex justify-between gap-2">
-                @foreach ([1, 2, 3, 4, 5] as $value)
-                    <label class="flex-1">
-                        <input type="radio" name="rating" value="{{ $value }}" class="peer sr-only" required>
-                        <div class="text-center py-3 rounded-lg border border-gray-300 cursor-pointer peer-checked:bg-blue-600 peer-checked:text-white peer-checked:border-blue-600">
-                            {{ $value }}
-                        </div>
-                    </label>
-                @endforeach
-            </div>
-            <div class="flex justify-between text-xs text-gray-400 mt-1">
-                <span>Kurang</span>
-                <span>Sangat Baik</span>
-            </div>
+        <div class="flex justify-between mb-6">
+            @foreach ([1,2,3,4,5] as $star)
+                <label class="cursor-pointer text-center">
+                    <input type="radio" name="rating" value="{{ $star }}" class="peer sr-only" required>
+                    <span class="flex items-center justify-center w-11 h-11 rounded-full border border-corn-sage bg-white/60 text-corn-dark peer-checked:bg-corn-gold peer-checked:border-corn-gold peer-checked:text-white transition">
+                        {{ $star }}
+                    </span>
+                </label>
+            @endforeach
         </div>
 
-        <div>
-            <label class="block text-sm font-medium text-gray-700 mb-1">Kritik &amp; Saran (opsional)</label>
-            <textarea name="comment" rows="3" class="w-full border border-gray-300 rounded-lg px-4 py-3"></textarea>
-        </div>
+        <label class="block text-sm font-medium text-corn-dark mb-1">Kritik &amp; Saran (opsional)</label>
+        <textarea name="comment" rows="3" maxlength="1000"
+            class="w-full border border-corn-sage bg-white/70 rounded-lg px-4 py-3 mb-4 focus:outline-none focus:ring-2 focus:ring-corn-green"
+            placeholder="Tulis masukan Anda di sini..."></textarea>
 
-        <button type="submit" class="w-full bg-blue-600 text-white font-medium py-3 rounded-lg">
+        <button type="submit" class="w-full bg-corn-green hover:bg-corn-caramel transition text-white font-medium py-3 rounded-lg">
             Kirim Feedback
         </button>
     </form>
 
-    <form method="POST" action="{{ route('kunjungan.skip-feedback') }}" class="mt-3">
+    <form method="POST" action="{{ route('kunjungan.skip-feedback') }}">
         @csrf
-        <button type="submit" class="w-full text-gray-500 font-medium py-2">
+        <button type="submit" class="w-full text-corn-dark/70 text-sm py-2 hover:text-corn-dark transition">
             Lewati
         </button>
     </form>

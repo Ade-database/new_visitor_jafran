@@ -1,54 +1,169 @@
 @extends('layouts.kunjungan')
-@section('title', 'Status Kunjungan')
-@section('content')
-<div class="bg-white rounded-2xl shadow p-6 text-center">
-    <div id="status-icon" class="text-5xl mb-4">⏳</div>
-    <h1 id="status-title" class="text-xl font-bold mb-2">Menunggu Persetujuan</h1>
-    <p id="status-desc" class="text-gray-500">
-        Data kunjungan Anda sedang ditinjau oleh admin. Silakan tunggu di lobby.
-    </p>
 
-    @if (session('info'))
-        <p class="text-sm text-amber-600 mt-4">{{ session('info') }}</p>
-    @endif
+@section('title', 'Terima Kasih')
+
+@section('content')
+
+<div class="fixed inset-0 -z-10 bg-cover bg-center"
+     style="background-image: url('{{ asset('images/background_visitor.jpg') }}');">
 </div>
 
-@if ($visit)
-<script>
-    const statusMap = {
-        pending: { icon: '⏳', title: 'Menunggu Persetujuan', desc: 'Data kunjungan Anda sedang ditinjau oleh admin. Silakan tunggu di lobby.' },
-        approved: { icon: '✅', title: 'Disetujui', desc: 'Kunjungan Anda disetujui. Silakan menuju resepsionis untuk check-in.' },
-        rejected: { icon: '❌', title: 'Ditolak', desc: 'Maaf, kunjungan Anda tidak dapat diproses saat ini.' },
-        checked_in: { icon: '🚶', title: 'Sedang Berkunjung', desc: 'Selamat berkunjung! Untuk pulang, scan QR yang sama lagi ya.' },
-        checked_out: { icon: '👋', title: 'Kunjungan Selesai', desc: 'Terima kasih sudah berkunjung. Sampai jumpa lagi!' },
-    };
+<div class="rounded-2xl shadow-lg p-6 border border-white/50 text-center"
+     style="background-color: rgba(255,255,255,0.4); backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px);">
 
-    function applyStatus(status) {
-        const info = statusMap[status] ?? statusMap.pending;
-        document.getElementById('status-icon').textContent = info.icon;
-        document.getElementById('status-title').textContent = info.title;
-        document.getElementById('status-desc').textContent = info.desc;
+    <img src="{{ asset('images/logo_jafran.png') }}"
+         alt="Logo Jafran"
+         class="mx-auto mb-4 object-contain"
+         style="width: 80px; height: auto;">
+
+    @if (session('info'))
+
+        <p class="text-corn-dark font-medium mb-4">
+            {{ session('info') }}
+        </p>
+
+    @else
+
+        {{-- Judul --}}
+        <h1 id="status-title"
+            class="text-xl font-bold mb-2 text-corn-dark">
+            Menunggu Persetujuan
+        </h1>
+
+        {{-- Deskripsi --}}
+        <p id="status-description"
+           class="text-corn-dark/80 text-sm mb-6">
+            Mohon tunggu, data Anda sedang diproses oleh admin.
+        </p>
+
+        {{-- Status Badge --}}
+        <div id="status-badge"
+             class="inline-block px-4 py-2 rounded-full bg-corn-gold/20 text-corn-dark font-medium mb-2">
+
+            Status:
+            <span id="status-text">pending</span>
+
+        </div>
+
+        {{-- Instruksi Checkout --}}
+        <p id="checkout-instruction"
+           class="hidden text-corn-dark text-sm font-medium mt-5 leading-relaxed">
+
+            Untuk melakukan checkout, silakan scan barcode yang sama
+            atau scan ulang barcode di pos satpam.
+
+        </p>
+
+    @endif
+
+</div>
+
+@if (! session('info'))
+
+<script>
+    function pollStatus() {
+
+        fetch("{{ route('kunjungan.status') }}")
+            .then(response => response.json())
+            .then(data => {
+
+                if (!data.status) return;
+
+                const status = data.status;
+
+                const title = document.getElementById('status-title');
+                const description = document.getElementById('status-description');
+                const statusText = document.getElementById('status-text');
+                const badge = document.getElementById('status-badge');
+                const checkoutInstruction = document.getElementById('checkout-instruction');
+
+                // Pastikan instruksi checkout disembunyikan
+                // selama belum checked_in
+                checkoutInstruction.classList.add('hidden');
+
+                // ==========================
+                // STATUS PENDING
+                // ==========================
+                if (status === 'pending') {
+
+                    title.textContent = 'Menunggu Persetujuan';
+
+                    description.textContent =
+                        'Mohon tunggu, data Anda sedang diproses oleh admin.';
+
+                    statusText.textContent = 'Menunggu Persetujuan';
+
+                    badge.className =
+                        'inline-block px-4 py-2 rounded-full bg-corn-gold/20 text-corn-dark font-medium mb-2';
+                }
+
+                // ==========================
+                // STATUS APPROVED
+                // ==========================
+                else if (status === 'approved') {
+
+                    title.textContent = 'Kunjungan Disetujui';
+
+                    description.textContent =
+                        'Kunjungan Anda telah disetujui. Silakan melanjutkan sesuai keperluan Anda.';
+
+                    statusText.textContent = 'Disetujui';
+
+                    badge.className =
+                        'inline-block px-4 py-2 rounded-full bg-corn-green/20 text-corn-dark font-medium mb-2';
+                }
+
+                // ==========================
+                // STATUS CHECKED IN
+                // ==========================
+                else if (status === 'checked_in') {
+
+                    title.textContent = 'Anda Sedang Berkunjung';
+
+                    description.textContent =
+                        'Selamat datang di PT. Jafran Indonesia. Kunjungan Anda telah berhasil dicatat.';
+
+                    statusText.textContent = 'Sedang Berkunjung';
+
+                    badge.className =
+                        'inline-block px-4 py-2 rounded-full bg-corn-green/20 text-corn-dark font-medium mb-2';
+
+                    // Tampilkan instruksi checkout
+                    checkoutInstruction.classList.remove('hidden');
+
+                }
+
+                // ==========================
+                // STATUS REJECTED
+                // ==========================
+                else if (status === 'rejected') {
+
+                    title.textContent = 'Kunjungan Ditolak';
+
+                    description.textContent =
+                        'Mohon maaf, permohonan kunjungan Anda belum dapat disetujui.';
+
+                    statusText.textContent = 'Ditolak';
+
+                    badge.className =
+                        'inline-block px-4 py-2 rounded-full bg-red-100 text-red-700 font-medium mb-2';
+                }
+
+            })
+            .catch(error => {
+
+                console.error('Gagal mengambil status:', error);
+
+            });
     }
 
-    applyStatus(@json($visit->status));
+    // Cek status setiap 5 detik
+    setInterval(pollStatus, 5000);
 
-    const pollInterval = setInterval(async () => {
-        try {
-            const res = await fetch('{{ route('kunjungan.status') }}');
-            const data = await res.json();
-
-            if (!data.status) return;
-
-            applyStatus(data.status);
-
-            // Kalau statusnya udah final, nggak perlu nanya-nanya lagi ke server
-            if (['rejected', 'checked_out'].includes(data.status)) {
-                clearInterval(pollInterval);
-            }
-        } catch (e) {
-            // Kalau lagi nggak ada koneksi internet, diem aja, coba lagi nanti
-        }
-    }, 5000);
+    // Cek status langsung saat halaman dibuka
+    pollStatus();
 </script>
+
 @endif
+
 @endsection
