@@ -69,10 +69,35 @@ class VisitorRegistrationController extends Controller
     public function storeNewVisitor(Request $request)
     {
         if (Visitor::byPhone(Session::get('reg.phone'))->exists()) {
+            return redirect()->route('kunjungan.phone')
+                ->withErrors(['phone_number' => 'Nomor ini sudah terdaftar, silakan mulai dari awal.']);
         }
 
         $data = $request->validate([
+            'name' => 'required|string|max:255',
+            'company' => 'nullable|string|max:255',
+            'purpose' => 'required|string|max:255',
+            'employee_id' => 'nullable|exists:employees,id',
+            'department_id' => 'nullable|exists:departments,id',
+            'photo' => 'required|image|max:5120',
         ]);
+
+        $photoPath = $request->file('photo')->store('visitor-photos', 'public');
+
+        $visitor = Visitor::create([
+            'name' => $data['name'],
+            'phone_number' => Session::get('reg.phone'),
+            'company' => $data['company'] ?? null,
+            'category' => 'reguler',
+            'photo_path' => $photoPath,
+        ]);
+
+        Session::put('reg.visitor_id', $visitor->id);
+        Session::put('reg.purpose', $data['purpose']);
+        Session::put('reg.employee_id', $data['employee_id'] ?? null);
+        Session::put('reg.department_id', $data['department_id'] ?? null);
+
+        return redirect()->route('kunjungan.video');
     }
 
     // ==============================
