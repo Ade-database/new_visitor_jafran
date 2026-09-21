@@ -23,6 +23,7 @@ class Visit extends Model
         'approved_at',
         'checked_in_at',
         'checked_out_at',
+        'last_confirmed_present_at',
         'department_id',
     ];
 
@@ -31,6 +32,7 @@ class Visit extends Model
         'approved_at' => 'datetime',
         'checked_in_at' => 'datetime',
         'checked_out_at' => 'datetime',
+        'last_confirmed_present_at' => 'datetime',
     ];
 
     public function visitor(): BelongsTo
@@ -98,6 +100,13 @@ class Visit extends Model
         $this->update([
             'status' => 'checked_out',
             'checked_out_at' => now(),
+        ]);
+    }
+
+    public function confirmStillPresent(): void
+    {
+        $this->update([
+            'last_confirmed_present_at' => now(),
         ]);
     }
 }

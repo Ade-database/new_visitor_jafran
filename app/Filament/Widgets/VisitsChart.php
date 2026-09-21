@@ -7,6 +7,8 @@ use Filament\Widgets\ChartWidget;
 
 class VisitsChart extends ChartWidget
 {
+    protected static ?int $sort = 3;
+
     protected int|string|array $columnSpan = 'full';
 
     protected ?string $heading = 'Kunjungan 12 Bulan Terakhir';

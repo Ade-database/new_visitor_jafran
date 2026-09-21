@@ -15,6 +15,8 @@ class PendingVisitsWidget extends BaseWidget
 {
     protected static ?string $heading = 'Kunjungan Perlu Aksi';
 
+    protected static ?int $sort = 2;
+
     protected int|string|array $columnSpan = 'full';
 
     public function table(Table $table): Table

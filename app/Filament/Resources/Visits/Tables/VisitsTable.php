@@ -16,17 +16,24 @@ class VisitsTable
         return $table
             ->columns([
                 TextColumn::make('visitor.name')
+                    ->label('Nama Tamu')
                     ->searchable(),
                 TextColumn::make('employee.name')
+                    ->label('Karyawan Dituju')
                     ->searchable(),
                 TextColumn::make('admin.name')
+                    ->label('Admin')
                     ->searchable(),
                 TextColumn::make('input_by')
+                    ->label('Input By')
                     ->numeric()
-                    ->sortable(),
+                    ->sortable()
+                    ->toggleable(isToggledHiddenByDefault: true),
                 TextColumn::make('purpose')
+                    ->label('Tujuan')
                     ->searchable(),
                 TextColumn::make('status')
+                    ->label('Status')
                     ->badge(),
                 TextColumn::make('feedback.rating')
                     ->label('Rating')
@@ -39,23 +46,33 @@ class VisitsTable
                     ->placeholder('Belum ada ulasan')
                     ->searchable(),
                 TextColumn::make('submitted_at')
-                    ->dateTime()
-                    ->sortable(),
+                    ->label('Waktu Submit')
+                    ->dateTime('d M Y H:i')
+                    ->sortable()
+                    ->toggleable(isToggledHiddenByDefault: true),
                 TextColumn::make('approved_at')
-                    ->dateTime()
-                    ->sortable(),
+                    ->label('Waktu Disetujui')
+                    ->dateTime('d M Y H:i')
+                    ->sortable()
+                    ->toggleable(isToggledHiddenByDefault: true),
                 TextColumn::make('checked_in_at')
-                    ->dateTime()
-                    ->sortable(),
+                    ->label('Waktu Check-in')
+                    ->dateTime('d M Y H:i')
+                    ->sortable()
+                    ->placeholder('-'),
                 TextColumn::make('checked_out_at')
-                    ->dateTime()
-                    ->sortable(),
+                    ->label('Waktu Check-out')
+                    ->dateTime('d M Y H:i')
+                    ->sortable()
+                    ->placeholder('-'),
                 TextColumn::make('created_at')
-                    ->dateTime()
+                    ->label('Dibuat')
+                    ->dateTime('d M Y H:i')
                     ->sortable()
                     ->toggleable(isToggledHiddenByDefault: true),
                 TextColumn::make('updated_at')
-                    ->dateTime()
+                    ->label('Diperbarui')
+                    ->dateTime('d M Y H:i')
                     ->sortable()
                     ->toggleable(isToggledHiddenByDefault: true),
             ])

@@ -75,10 +75,17 @@ class VisitResource extends Resource
                         default => 'gray',
                     }),
 
-                TextColumn::make('submitted_at')
-                    ->label('Waktu Submit')
+                TextColumn::make('checked_in_at')
+                    ->label('Waktu Check-in')
                     ->dateTime('d M Y H:i')
-                    ->sortable(),
+                    ->sortable()
+                    ->placeholder('-'),
+
+                TextColumn::make('checked_out_at')
+                    ->label('Waktu Check-out')
+                    ->dateTime('d M Y H:i')
+                    ->sortable()
+                    ->placeholder('-'),
 
                 TextColumn::make('feedback.rating')
                     ->label('Rating')
