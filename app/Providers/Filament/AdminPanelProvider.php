@@ -29,7 +29,11 @@ class AdminPanelProvider extends PanelProvider
             ->viteTheme('resources/css/filament/admin/theme.css')
             ->login(\App\Filament\Pages\Auth\Login::class)
             ->brandLogo(fn () => view('filament.admin.logo'))
-            ->brandLogoHeight('3rem')    
+            ->brandLogoHeight('3rem') 
+            ->renderHook(
+             PanelsRenderHook::TOPBAR_LOGO_AFTER,
+             fn () => view('filament.admin.topbar-greeting'),
+                )   
             ->sidebarFullyCollapsibleOnDesktop()
             ->colors([
                'primary' => Color::hex('#C9A227'),

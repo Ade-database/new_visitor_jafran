@@ -11,7 +11,7 @@ class Login extends BaseLogin
     public function getHeading(): string|Htmlable
     {
         return new HtmlString('
-            <img src="' . asset('images/logo-jafran.png') . '" alt="PT. Jafran Indonesia" class="mx-auto h-24 w-auto">
+            <img src="/images/logo_jafran.png" alt="PT. Jafran Indonesia" class="mx-auto h-24 w-auto">
         ');
     }
 }
