@@ -27,6 +27,11 @@ class EmployeeResource extends Resource
 
     protected static ?string $navigationLabel = 'Karyawan';
 
+    public static function canViewAny(): bool
+    {
+    	return auth()->user()?->isAdmin() ?? false;
+    }
+
     public static function form(Schema $schema): Schema
     {
         return $schema->components([
