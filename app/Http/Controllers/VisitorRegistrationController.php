@@ -38,6 +38,30 @@ class VisitorRegistrationController extends Controller
 
         Session::put('reg.visitor_id', $visitor->id);
 
+        // Masih ada kunjungan yang disetujui dan belum checkout -> arahkan ke checkout
+        $approvedVisit = Visit::where('visitor_id', $visitor->id)
+            ->where('status', 'approved')
+            ->latest('approved_at')
+            ->first();
+
+        if ($approvedVisit) {
+            Session::put('reg.visit_id', $approvedVisit->id);
+
+            return redirect()->route('kunjungan.checkout-confirm');
+        }
+
+        // Masih menunggu persetujuan -> jangan buat kunjungan ganda
+        $pendingVisit = Visit::where('visitor_id', $visitor->id)
+            ->where('status', 'pending')
+            ->latest('submitted_at')
+            ->first();
+
+        if ($pendingVisit) {
+            Session::put('reg.last_visit_id', $pendingVisit->id);
+
+            return redirect()->route('kunjungan.thanks');
+        }
+
         return redirect()->route('kunjungan.confirm');
     }
 
@@ -192,7 +216,7 @@ class VisitorRegistrationController extends Controller
     }
 
     // ==============================
-    // CHECKOUT (tidak dipakai lagi, dibiarkan)
+    // CHECKOUT
     // ==============================
 
     public function checkoutForm()
