@@ -14,6 +14,7 @@ use Filament\Schemas\Contracts\HasSchemas;
 use Filament\Schemas\Schema;
 use Filament\Support\Icons\Heroicon;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Hash;
 
 class Pengaturan extends Page implements HasSchemas
 {
@@ -27,7 +28,6 @@ class Pengaturan extends Page implements HasSchemas
 
     protected static ?string $slug = 'pengaturan';
 
-    // Angka besar supaya selalu paling bawah di sidebar
     protected static ?int $navigationSort = 99;
 
     protected string $view = 'filament.pages.pengaturan';
@@ -87,9 +87,9 @@ class Pengaturan extends Page implements HasSchemas
 
         $user = Auth::user();
 
-        // Kalau model User punya cast 'hashed' (default Laravel 11/12), cukup isi plain text
+        // Model User tidak punya cast 'hashed', jadi di-hash manual di sini
         $user->update([
-            'password' => $data['password'],
+            'password' => Hash::make($data['password']),
         ]);
 
         // Supaya sesi saat ini tidak ikut logout (karena ada AuthenticateSession)
