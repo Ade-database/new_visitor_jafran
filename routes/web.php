@@ -27,7 +27,6 @@ Route::prefix('kunjungan')->name('kunjungan.')->group(function () {
 
     Route::get('/checkout', [VisitorRegistrationController::class, 'checkoutForm'])->name('checkout-confirm');
     Route::post('/checkout', [VisitorRegistrationController::class, 'storeCheckout'])->name('store-checkout');
-    Route::get('/checkout/status', [VisitorRegistrationController::class, 'checkoutStatus'])->name('checkout-status');
 
     Route::get('/feedback', [VisitorRegistrationController::class, 'feedbackForm'])->name('feedback');
     Route::post('/feedback', [VisitorRegistrationController::class, 'storeFeedback'])->name('store-feedback');

@@ -12,6 +12,7 @@ use Filament\Resources\Resource;
 use Filament\Schemas\Schema;
 use Filament\Support\Icons\Heroicon;
 use Filament\Tables\Columns\TextColumn;
+use Filament\Tables\Filters\SelectFilter;
 use Filament\Tables\Table;
 use Illuminate\Support\Facades\Auth;
 
@@ -69,14 +70,19 @@ class VisitResource extends Resource
                     ->badge()
                     ->color(fn (string $state): string => match ($state) {
                         'pending' => 'gray',
-                        'approved', 'checked_in' => 'success',
+                        'approved' => 'success',
                         'rejected' => 'danger',
                         'checked_out' => 'info',
                         default => 'gray',
                     }),
 
-                TextColumn::make('checked_in_at')
-                    ->label('Waktu Check-in')
+                TextColumn::make('submitted_at')
+                    ->label('Waktu Submit')
+                    ->dateTime('d M Y H:i')
+                    ->sortable(),
+
+                TextColumn::make('approved_at')
+                    ->label('Waktu Disetujui')
                     ->dateTime('d M Y H:i')
                     ->sortable()
                     ->placeholder('-'),
@@ -87,50 +93,28 @@ class VisitResource extends Resource
                     ->sortable()
                     ->placeholder('-'),
 
-                TextColumn::make('feedback.rating')
-                    ->label('Rating')
-                    ->formatStateUsing(fn ($state) => $state ? str_repeat('⭐', $state) : '-')
-                    ->visible(fn () => Auth::user()?->role === 'admin'),
+                TextColumn::make('rejected_reason')
+                    ->label('Alasan Penolakan')
+                    ->limit(40)
+                    ->tooltip(fn (Visit $record) => $record->rejected_reason)
+                    ->placeholder('-'),
 
-                TextColumn::make('feedback.comment')
-                    ->label('Ulasan')
-                    ->limit(50)
-                    ->wrap()
-                    ->placeholder('Belum ada ulasan')
-                    ->visible(fn () => Auth::user()?->role === 'admin'),
+                TextColumn::make('admin.name')
+                    ->label('Diproses Oleh')
+                    ->placeholder('-'),
             ])
             ->defaultSort('submitted_at', 'desc')
+            ->filters([
+                SelectFilter::make('status')
+                    ->label('Status')
+                    ->options([
+                        'pending' => 'Pending',
+                        'approved' => 'Disetujui (belum checkout)',
+                        'checked_out' => 'Sudah Checkout',
+                        'rejected' => 'Ditolak',
+                    ]),
+            ])
             ->recordActions([
-                Action::make('checkin')
-                    ->label('Check-in')
-                    ->color('info')
-                    ->icon('heroicon-o-arrow-right-end-on-rectangle')
-                    ->visible(fn (Visit $record) => $record->status === 'approved')
-                    ->requiresConfirmation()
-                    ->action(function (Visit $record) {
-                        $record->checkIn();
-
-                        Notification::make()
-                            ->title('Tamu berhasil check-in')
-                            ->success()
-                            ->send();
-                    }),
-
-                Action::make('checkout')
-                    ->label('Checkout')
-                    ->color('gray')
-                    ->icon('heroicon-o-arrow-left-start-on-rectangle')
-                    ->visible(fn (Visit $record) => $record->status === 'checked_in')
-                    ->requiresConfirmation()
-                    ->action(function (Visit $record) {
-                        $record->checkOut();
-
-                        Notification::make()
-                            ->title('Tamu berhasil checkout')
-                            ->success()
-                            ->send();
-                    }),
-
                 Action::make('approve')
                     ->label('Setujui')
                     ->color('success')
@@ -162,6 +146,22 @@ class VisitResource extends Resource
                         Notification::make()
                             ->title('Kunjungan ditolak')
                             ->danger()
+                            ->send();
+                    }),
+
+                Action::make('checkout')
+                    ->label('Checkout')
+                    ->color('gray')
+                    ->icon('heroicon-o-arrow-left-start-on-rectangle')
+                    ->visible(fn (Visit $record) => $record->status === 'approved')
+                    ->requiresConfirmation()
+                    ->modalDescription('Tandai tamu ini sudah pulang (misal tamu lupa checkout).')
+                    ->action(function (Visit $record) {
+                        $record->checkOut();
+
+                        Notification::make()
+                            ->title('Tamu berhasil checkout')
+                            ->success()
                             ->send();
                     }),
             ]);

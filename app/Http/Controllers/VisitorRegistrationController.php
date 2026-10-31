@@ -38,12 +38,6 @@ class VisitorRegistrationController extends Controller
 
         Session::put('reg.visitor_id', $visitor->id);
 
-        if ($visitor->activeVisit && $visitor->activeVisit->status === 'checked_in') {
-            Session::put('reg.visit_id', $visitor->activeVisit->id);
-
-            return redirect()->route('kunjungan.checkout-confirm');
-        }
-
         return redirect()->route('kunjungan.confirm');
     }
 
@@ -145,20 +139,9 @@ class VisitorRegistrationController extends Controller
             'company' => $data['company'] ?? null,
         ]);
 
-        Session::put(
-            'reg.purpose',
-            $data['purpose']
-        );
-
-        Session::put(
-            'reg.employee_id',
-            $data['employee_id'] ?? null
-        );
-
-        Session::put(
-            'reg.department_id',
-            $data['department_id'] ?? null
-        );
+        Session::put('reg.purpose', $data['purpose']);
+        Session::put('reg.employee_id', $data['employee_id'] ?? null);
+        Session::put('reg.department_id', $data['department_id'] ?? null);
 
         return redirect()->route('kunjungan.video');
     }
@@ -188,21 +171,10 @@ class VisitorRegistrationController extends Controller
 
         $visit = Visit::create([
             'visitor_id' => Session::get('reg.visitor_id'),
-
-            'department_id' => Session::get(
-                'reg.department_id'
-            ),
-
-            'employee_id' => Session::get(
-                'reg.employee_id'
-            ),
-
-            'purpose' => Session::get(
-                'reg.purpose'
-            ),
-
+            'department_id' => Session::get('reg.department_id'),
+            'employee_id' => Session::get('reg.employee_id'),
+            'purpose' => Session::get('reg.purpose'),
             'status' => 'pending',
-
             'submitted_at' => now(),
         ]);
 
@@ -214,16 +186,13 @@ class VisitorRegistrationController extends Controller
             'reg.employee_id',
         ]);
 
-        Session::put(
-            'reg.last_visit_id',
-            $visit->id
-        );
+        Session::put('reg.last_visit_id', $visit->id);
 
         return redirect()->route('kunjungan.thanks');
     }
 
     // ==============================
-    // CHECKOUT
+    // CHECKOUT (tidak dipakai lagi, dibiarkan)
     // ==============================
 
     public function checkoutForm()
@@ -258,10 +227,7 @@ class VisitorRegistrationController extends Controller
 
         $visit->checkOut();
 
-        Session::put(
-            'reg.feedback_visit_id',
-            $visit->id
-        );
+        Session::put('reg.feedback_visit_id', $visit->id);
 
         Session::forget('reg.visit_id');
 
@@ -293,39 +259,25 @@ class VisitorRegistrationController extends Controller
         ]);
 
         \App\Models\VisitFeedback::create([
-            'visit_id' => Session::get(
-                'reg.feedback_visit_id'
-            ),
-
+            'visit_id' => Session::get('reg.feedback_visit_id'),
             'rating' => $data['rating'],
-
             'comment' => $data['comment'] ?? null,
         ]);
 
-        Session::forget(
-            'reg.feedback_visit_id'
-        );
+        Session::forget('reg.feedback_visit_id');
 
         return redirect()
             ->route('kunjungan.thanks')
-            ->with(
-                'info',
-                'Terima kasih atas feedback Anda!'
-            );
+            ->with('info', 'Terima kasih atas feedback Anda!');
     }
 
     public function skipFeedback()
     {
-        Session::forget(
-            'reg.feedback_visit_id'
-        );
+        Session::forget('reg.feedback_visit_id');
 
         return redirect()
             ->route('kunjungan.thanks')
-            ->with(
-                'info',
-                'Terima kasih sudah berkunjung!'
-            );
+            ->with('info', 'Terima kasih sudah berkunjung!');
     }
 
     // ==============================
@@ -337,9 +289,7 @@ class VisitorRegistrationController extends Controller
         $visit = null;
 
         if (Session::has('reg.last_visit_id')) {
-            $visit = Visit::find(
-                Session::get('reg.last_visit_id')
-            );
+            $visit = Visit::find(Session::get('reg.last_visit_id'));
         }
 
         return view(
@@ -349,29 +299,24 @@ class VisitorRegistrationController extends Controller
     }
 
     // ==============================
-    // STATUS
+    // STATUS (dipanggil otomatis oleh halaman thanks)
     // ==============================
 
     public function status()
     {
         if (! Session::has('reg.last_visit_id')) {
-            return response()->json([
-                'status' => null
-            ]);
+            return response()->json(['status' => null]);
         }
 
-        $visit = Visit::find(
-            Session::get('reg.last_visit_id')
-        );
+        $visit = Visit::find(Session::get('reg.last_visit_id'));
 
         if (! $visit) {
-            return response()->json([
-                'status' => null
-            ]);
+            return response()->json(['status' => null]);
         }
 
         return response()->json([
             'status' => $visit->status,
+            'rejected_reason' => $visit->rejected_reason,
         ]);
     }
 }

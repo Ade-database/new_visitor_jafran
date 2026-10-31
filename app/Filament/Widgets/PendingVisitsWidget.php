@@ -24,7 +24,7 @@ class PendingVisitsWidget extends BaseWidget
         return $table
             ->query(
                 Visit::query()
-                    ->whereIn('status', ['pending', 'approved'])
+                    ->where('status', 'pending')
                     ->latest('submitted_at')
             )
             ->columns([
@@ -54,26 +54,10 @@ class PendingVisitsWidget extends BaseWidget
                     ->sortable(),
             ])
             ->recordActions([
-                Action::make('checkin')
-                    ->label('Check-in')
-                    ->color('info')
-                    ->icon('heroicon-o-arrow-right-end-on-rectangle')
-                    ->visible(fn (Visit $record) => $record->status === 'approved')
-                    ->requiresConfirmation()
-                    ->action(function (Visit $record) {
-                        $record->checkIn();
-
-                        Notification::make()
-                            ->title('Tamu berhasil check-in')
-                            ->success()
-                            ->send();
-                    }),
-
                 Action::make('approve')
                     ->label('Setujui')
                     ->color('success')
                     ->icon('heroicon-o-check')
-                    ->visible(fn (Visit $record) => $record->status === 'pending')
                     ->requiresConfirmation()
                     ->action(function (Visit $record) {
                         $record->approve(Auth::user());
@@ -88,7 +72,6 @@ class PendingVisitsWidget extends BaseWidget
                     ->label('Tolak')
                     ->color('danger')
                     ->icon('heroicon-o-x-mark')
-                    ->visible(fn (Visit $record) => $record->status === 'pending')
                     ->schema([
                         Textarea::make('reason')
                             ->label('Alasan penolakan')

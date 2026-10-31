@@ -24,35 +24,33 @@
 
     @else
 
-        {{-- Judul --}}
-        <h1 id="status-title"
-            class="text-xl font-bold mb-2 text-corn-dark">
+        <h1 id="status-title" class="text-xl font-bold mb-2 text-corn-dark">
             Menunggu Persetujuan
         </h1>
 
-        {{-- Deskripsi --}}
-        <p id="status-description"
-           class="text-corn-dark/80 text-sm mb-6">
+        <p id="status-description" class="text-corn-dark/80 text-sm mb-6">
             Mohon tunggu, data Anda sedang diproses oleh admin.
         </p>
 
-        {{-- Status Badge --}}
         <div id="status-badge"
              class="inline-block px-4 py-2 rounded-full bg-corn-gold/20 text-corn-dark font-medium mb-2">
-
             Status:
-            <span id="status-text">pending</span>
-
+            <span id="status-text">Menunggu Persetujuan</span>
         </div>
 
-        {{-- Instruksi Checkout --}}
-        <p id="checkout-instruction"
-           class="hidden text-corn-dark text-sm font-medium mt-5 leading-relaxed">
+        {{-- Alasan penolakan (hanya muncul kalau ditolak) --}}
+        <div id="rejection-box"
+             class="hidden mt-4 text-left rounded-xl border border-red-200 bg-red-50/80 p-4">
+            <p class="text-xs font-semibold text-red-700 mb-1">Alasan penolakan:</p>
+            <p id="rejection-reason" class="text-sm text-red-800"></p>
+        </div>
 
-            Untuk melakukan checkout, silakan scan barcode yang sama
-            atau scan ulang barcode di pos satpam.
-
-        </p>
+        {{-- Tombol daftar ulang (hanya muncul kalau ditolak) --}}
+        <a id="retry-button"
+           href="{{ route('kunjungan.phone') }}"
+           class="hidden mt-5 inline-block px-5 py-2 rounded-lg bg-corn-gold text-white text-sm font-medium">
+            Kembali ke Halaman Awal
+        </a>
 
     @endif
 
@@ -61,6 +59,8 @@
 @if (! session('info'))
 
 <script>
+    let pollTimer = null;
+
     function pollStatus() {
 
         fetch("{{ route('kunjungan.status') }}")
@@ -75,90 +75,52 @@
                 const description = document.getElementById('status-description');
                 const statusText = document.getElementById('status-text');
                 const badge = document.getElementById('status-badge');
-                const checkoutInstruction = document.getElementById('checkout-instruction');
+                const rejectionBox = document.getElementById('rejection-box');
+                const rejectionReason = document.getElementById('rejection-reason');
+                const retryButton = document.getElementById('retry-button');
 
-                // Pastikan instruksi checkout disembunyikan
-                // selama belum checked_in
-                checkoutInstruction.classList.add('hidden');
-
-                // ==========================
-                // STATUS PENDING
-                // ==========================
                 if (status === 'pending') {
 
                     title.textContent = 'Menunggu Persetujuan';
-
-                    description.textContent =
-                        'Mohon tunggu, data Anda sedang diproses oleh admin.';
-
+                    description.textContent = 'Mohon tunggu, data Anda sedang diproses oleh admin.';
                     statusText.textContent = 'Menunggu Persetujuan';
+                    badge.className = 'inline-block px-4 py-2 rounded-full bg-corn-gold/20 text-corn-dark font-medium mb-2';
+                    rejectionBox.classList.add('hidden');
+                    retryButton.classList.add('hidden');
 
-                    badge.className =
-                        'inline-block px-4 py-2 rounded-full bg-corn-gold/20 text-corn-dark font-medium mb-2';
-                }
-
-                // ==========================
-                // STATUS APPROVED
-                // ==========================
-                else if (status === 'approved') {
+                } else if (status === 'approved') {
 
                     title.textContent = 'Kunjungan Disetujui';
-
-                    description.textContent =
-                        'Kunjungan Anda telah disetujui. Silakan melanjutkan sesuai keperluan Anda.';
-
+                    description.textContent = 'Kunjungan Anda telah disetujui. Silakan melanjutkan sesuai keperluan Anda.';
                     statusText.textContent = 'Disetujui';
+                    badge.className = 'inline-block px-4 py-2 rounded-full bg-corn-green/20 text-corn-dark font-medium mb-2';
+                    rejectionBox.classList.add('hidden');
+                    retryButton.classList.add('hidden');
 
-                    badge.className =
-                        'inline-block px-4 py-2 rounded-full bg-corn-green/20 text-corn-dark font-medium mb-2';
-                }
+                    clearInterval(pollTimer);
 
-                // ==========================
-                // STATUS CHECKED IN
-                // ==========================
-                else if (status === 'checked_in') {
-
-                    title.textContent = 'Anda Sedang Berkunjung';
-
-                    description.textContent =
-                        'Selamat datang di PT. Jafran Indonesia. Kunjungan Anda telah berhasil dicatat.';
-
-                    statusText.textContent = 'Sedang Berkunjung';
-
-                    badge.className =
-                        'inline-block px-4 py-2 rounded-full bg-corn-green/20 text-corn-dark font-medium mb-2';
-
-                    // Tampilkan instruksi checkout
-                    checkoutInstruction.classList.remove('hidden');
-
-                }
-
-                // ==========================
-                // STATUS REJECTED
-                // ==========================
-                else if (status === 'rejected') {
+                } else if (status === 'rejected') {
 
                     title.textContent = 'Kunjungan Ditolak';
-
-                    description.textContent =
-                        'Mohon maaf, permohonan kunjungan Anda belum dapat disetujui.';
-
+                    description.textContent = 'Mohon maaf, permohonan kunjungan Anda belum dapat disetujui.';
                     statusText.textContent = 'Ditolak';
+                    badge.className = 'inline-block px-4 py-2 rounded-full bg-red-100 text-red-700 font-medium mb-2';
 
-                    badge.className =
-                        'inline-block px-4 py-2 rounded-full bg-red-100 text-red-700 font-medium mb-2';
+                    rejectionReason.textContent = data.rejected_reason || '-';
+                    rejectionBox.classList.remove('hidden');
+                    retryButton.classList.remove('hidden');
+
+                    clearInterval(pollTimer);
                 }
 
             })
             .catch(error => {
-
                 console.error('Gagal mengambil status:', error);
-
             });
     }
 
     // Cek status setiap 5 detik
-    setInterval(pollStatus, 5000);
+    pollTimer = setInterval(pollStatus, 5000);
 
     // Cek status langsung saat halaman dibuka
     pollStatus();

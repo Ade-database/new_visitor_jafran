@@ -13,7 +13,7 @@ class OverdueCheckoutWidget extends BaseWidget
 {
     protected static ?string $heading = 'Tamu Belum Checkout';
 
-    protected static ?int $sort = 2;
+    protected static ?int $sort = 3;
 
     protected int|string|array $columnSpan = 'full';
 
@@ -27,8 +27,8 @@ class OverdueCheckoutWidget extends BaseWidget
         return $table
             ->query(
                 Visit::query()
-                    ->where('status', 'checked_in')
-                    ->latest('checked_in_at')
+                    ->where('status', 'approved')
+                    ->latest('approved_at')
             )
             ->columns([
                 TextColumn::make('visitor.name')
@@ -43,8 +43,8 @@ class OverdueCheckoutWidget extends BaseWidget
                     ->label('Karyawan Dituju')
                     ->placeholder('-'),
 
-                TextColumn::make('checked_in_at')
-                    ->label('Waktu Check-in')
+                TextColumn::make('approved_at')
+                    ->label('Waktu Disetujui')
                     ->dateTime('d M Y H:i'),
 
                 TextColumn::make('last_confirmed_present_at')
@@ -84,7 +84,7 @@ class OverdueCheckoutWidget extends BaseWidget
                     }),
             ])
             ->emptyStateHeading('Semua tamu sudah checkout')
-            ->emptyStateDescription('Tidak ada tamu yang masih tercatat check-in.')
+            ->emptyStateDescription('Tidak ada tamu yang masih tercatat di lokasi.')
             ->emptyStateIcon('heroicon-o-check-circle');
     }
 }

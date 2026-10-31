@@ -24,9 +24,9 @@ class VisitorStatsOverview extends BaseWidget
                 ->icon('heroicon-o-clock')
                 ->color('warning'),
 
-            Stat::make('Sedang Check-in', Visit::where('status', 'checked_in')->count())
-                ->description('Tamu masih berada di lokasi')
-                ->icon('heroicon-o-arrow-right-end-on-rectangle')
+            Stat::make('Disetujui Hari Ini', Visit::where('status', 'approved')->whereDate('submitted_at', today())->count())
+                ->description('Kunjungan yang sudah disetujui')
+                ->icon('heroicon-o-check-circle')
                 ->color('success'),
 
             Stat::make('Total Tamu Terdaftar', Visitor::count())
