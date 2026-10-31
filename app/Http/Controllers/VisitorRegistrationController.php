@@ -341,6 +341,8 @@ class VisitorRegistrationController extends Controller
         return response()->json([
             'status' => $visit->status,
             'rejected_reason' => $visit->rejected_reason,
+            'approved_at' => $visit->approved_at?->toIso8601String(),
+            'server_now' => now()->toIso8601String(),
         ]);
     }
 }
