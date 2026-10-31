@@ -29,15 +29,14 @@ class AdminPanelProvider extends PanelProvider
             ->viteTheme('resources/css/filament/admin/theme.css')
             ->login(\App\Filament\Pages\Auth\Login::class)
             ->brandLogo(fn () => view('filament.admin.logo'))
-            ->brandLogoHeight('3rem') 
+            ->brandLogoHeight('3rem')
             ->renderHook(
-             PanelsRenderHook::TOPBAR_LOGO_AFTER,
-             fn () => view('filament.admin.topbar-greeting'),
-                )   
+                PanelsRenderHook::TOPBAR_LOGO_AFTER,
+                fn () => view('filament.admin.topbar-greeting'),
+            )
             ->sidebarFullyCollapsibleOnDesktop()
             ->colors([
-               'primary' => Color::hex('#C9A227'),
-                
+                'primary' => Color::hex('#C9A227'),
             ])
             ->discoverResources(in: app_path('Filament/Resources'), for: 'App\Filament\Resources')
             ->discoverPages(in: app_path('Filament/Pages'), for: 'App\Filament\Pages')
@@ -49,7 +48,7 @@ class AdminPanelProvider extends PanelProvider
                 \App\Filament\Widgets\WelcomeWidget::class,
             ])
             ->renderHook(
-                PanelsRenderHook::SIDEBAR_NAV_END,
+                PanelsRenderHook::SIDEBAR_FOOTER,
                 fn (): string => view('filament.hooks.sidebar-sign-out')->render(),
             )
             ->renderHook(
