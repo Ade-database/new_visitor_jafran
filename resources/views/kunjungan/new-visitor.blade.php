@@ -86,6 +86,7 @@
         </label>
 
         <select name="employee_id"
+                id="employee-select"
                 class="w-full border border-corn-sage bg-white/70 rounded-lg px-4 py-3 mb-1 focus:outline-none focus:ring-2 focus:ring-corn-green">
 
             <option value="">
@@ -112,6 +113,7 @@
         </label>
 
         <select name="department_id"
+                id="department-select"
                 class="w-full border border-corn-sage bg-white/70 rounded-lg px-4 py-3 mb-4 focus:outline-none focus:ring-2 focus:ring-corn-green">
 
             <option value="">
@@ -150,5 +152,27 @@
     </form>
 
 </div>
+
+<script>
+    document.addEventListener('DOMContentLoaded', function () {
+        const employeeSelect   = document.getElementById('employee-select');
+        const departmentSelect = document.getElementById('department-select');
+
+        if (!employeeSelect || !departmentSelect) return;
+
+        // Peta: id karyawan -> id departemennya (dari controller)
+        const employeeDepartments = @json($employeeDepartments);
+
+        employeeSelect.addEventListener('change', function () {
+            const deptId = employeeDepartments[this.value];
+
+            // Isi departemen otomatis kalau karyawan dipilih dan punya departemen.
+            // Kalau karyawan dikosongkan, departemen dibiarkan seperti pilihan sebelumnya.
+            if (this.value && deptId) {
+                departmentSelect.value = String(deptId);
+            }
+        });
+    });
+</script>
 
 @endsection
