@@ -1,3 +1,4 @@
+
 <?php
 
 namespace Database\Seeders;
@@ -10,18 +11,22 @@ class UserSeeder extends Seeder
 {
     public function run(): void
     {
-        User::create([
-            'name'     => 'Admin HRD',
-            'email'    => 'admin@vms.test',
-            'password' => Hash::make('password'),
-            'role'     => 'admin',
-        ]);
+        User::updateOrCreate(
+            ['email' => 'admin@vst.com'],
+            [
+                'name' => 'Admin',
+                'password' => Hash::make('AdminJafran2026!'),
+                'role' => 'admin',
+            ]
+        );
 
-        User::create([
-            'name'     => 'Satpam',
-            'email'    => 'satpam@vms.test',
-            'password' => Hash::make('password'),
-            'role'     => 'satpam',
-        ]);
+        User::updateOrCreate(
+            ['email' => 'satpam@vst.com'],
+            [
+                'name' => 'Satpam',
+                'password' => Hash::make('SatpamJafran2026!'),
+                'role' => 'satpam',
+            ]
+        );
     }
 }
